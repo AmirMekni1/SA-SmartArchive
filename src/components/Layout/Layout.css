@@ -1,0 +1,29 @@
+/* src/components/Layout/Layout.css */
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-main {
+  display: flex;
+  flex: 1;
+  margin-top: 70px;
+}
+
+.layout-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  background: #f8f9fa;
+  min-height: calc(100vh - 70px - 60px);
+}
+
+@media (max-width: 768px) {
+  .layout-main {
+    flex-direction: column;
+  }
+  
+  .layout-content {
+    padding: var(--spacing-md);
+  }
+}

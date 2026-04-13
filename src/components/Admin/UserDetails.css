@@ -1,0 +1,156 @@
+/* src/components/Admin/UserDetails.css */
+.user-details {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.details-header {
+  margin-bottom: var(--spacing-2xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.btn-back {
+  background: var(--gray-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btn-back:hover {
+  background: var(--gray);
+  color: white;
+}
+
+.details-header h1 {
+  color: var(--dark);
+}
+
+.details-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.user-info-card {
+  background: white;
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-2xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-avatar-large {
+  width: 100px;
+  height: 100px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  font-weight: bold;
+}
+
+.user-basic-info h2 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--dark);
+}
+
+.user-basic-info p {
+  margin: var(--spacing-xs) 0;
+  color: var(--gray);
+}
+
+.user-status {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.details-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.btn-edit,
+.btn-toggle,
+.btn-save {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btn-edit {
+  background: var(--warning);
+  color: white;
+}
+
+.btn-toggle {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-save {
+  background: var(--gradient-primary);
+  color: white;
+  width: 100%;
+}
+
+.btn-edit:hover,
+.btn-toggle:hover,
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.edit-form {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-details-info {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-details-info h3 {
+  margin-bottom: var(--spacing-lg);
+  color: var(--dark);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.info-item label {
+  font-weight: 600;
+  color: var(--gray);
+}
+
+.info-item span {
+  color: var(--dark);
+}

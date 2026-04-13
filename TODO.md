@@ -1,0 +1,1 @@
+# Upgrade sendWelcomeEmail to include CIN and Password\n\n## Steps:\n1. ✅ Understand files (email.service.js, auth.routes.js, User.js)\n2. 📝 Update services/email.service.js: signature and template\n3. 📝 Update routes/auth.routes.js: function call\n4. 🧪 Test verification flow\n5. ✅ Complete

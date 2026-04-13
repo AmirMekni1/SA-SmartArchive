@@ -1,0 +1,54 @@
+{
+    "success": true,
+    "extracted_data": {
+        "_metadata": {
+            "context_length": 128000,
+            "extraction_method": "DeepSeek-V3.1",
+            "model": "deepseek-v3.1:671b-cloud",
+            "temperature": 0.6,
+            "total_lines": 8
+        },
+        "birth_date": "02/02/1975",
+        "birth_place": "بوذينه، بوسالم",
+        "card_name": "بطاقة التعريف الوطنية",
+        "card_number": "07792937",
+        "document_title": "الجمهورية التونسية",
+        "father_name": "خليفه بن الحسين",
+        "first_name": "ثوريه",
+        "full_text": "\n\n   الجمهورية التونسية   ء \n\nبطاقة التعريف الوطنية \n     07792937 \n\n               بوكاري اللقب \n   خليفه بن الحسين بنت ثوريه الاسم \n            الماكني منذر حرم \n       1975 فيفري 02 تاريخ الولادة \n            بوسالم بوذينه،  \n<<<\f",
+        "husband_name": "الماكني منذر",
+        "last_name": "بوكاري",
+        "mother_name": null,
+        "state": null,
+        "text_lines": [
+            "الجمهورية التونسية   ء",
+            "بطاقة التعريف الوطنية",
+            "07792937",
+            "بوكاري اللقب",
+            "خليفه بن الحسين بنت ثوريه الاسم",
+            "الماكني منذر حرم",
+            "1975 فيفري 02 تاريخ الولادة",
+            "بوسالم بوذينه، "
+        ]
+    },
+    "cin_number": "07792937",
+    "first_name": "ثوريه",
+    "last_name": "بوكاري",
+    "full_name": "ثوريه بوكاري",
+    "user_exists": true,
+    "user_verified": false,
+    "is_new_user": false,
+    "message": "existing unverified user",
+    "cin_validation": {
+        "found": true,
+        "cin_number": "07792937",
+        "isValid": true,
+        "message": "Valid CIN number"
+    },
+    "metadata": {
+        "total_fields": 13,
+        "has_full_text": true,
+        "total_lines": 8
+    },
+    "timestamp": "2026-04-12T14:15:18.272Z"
+}

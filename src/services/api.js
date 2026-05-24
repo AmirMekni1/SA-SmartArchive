@@ -1,17 +1,17 @@
-// src/services/api.js
+
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005/api';
 
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 });
 
-// إضافة التوكن إلى كل طلب
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -23,7 +23,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// معالجة الأخطاء العامة
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,7 +35,7 @@ api.interceptors.response.use(
   }
 );
 
-// خدمات المصادقة
+
 export const auth = {
   register: (data) => api.post('/auth/register', data),
   verifyEmail: (data) => api.post('/auth/verify-email', data),
@@ -47,10 +47,10 @@ export const auth = {
   resendCode: (email) => api.post('/auth/resend-code', { email }),
   checkCIN: (cinNumber) => api.post('/auth/check-cin', { cin_number: cinNumber }),
   updateProfile: (data) => api.put('/auth/profile', data),
-  changePassword: (data) => api.post('/auth/change-password', data),
+  changePassword: (data) => api.post('/auth/change-password', data)
 };
 
-// خدمات المسؤول
+
 export const admin = {
   getAllUsers: () => api.get('/admin/users'),
   getUserById: (id) => api.get(`/admin/users/${id}`),
@@ -58,18 +58,27 @@ export const admin = {
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   getStatistics: () => api.get('/admin/statistics'),
   getSystemLogs: () => api.get('/admin/logs'),
+  getSettings: () => api.get('/admin/settings'),
+  updateSettings: (data) => api.put('/admin/settings', data),
+  reviewDocument: (id, data) => api.put(`/admin/documents/${id}/review`, data),
+  getReportSuggestions: (params) => api.get('/admin/reports/suggestions', { params }),
+  getReportTextAutocomplete: (params) => api.get('/admin/reports/text-autocomplete', { params }),
+  getReportTokenAutocomplete: (params) => api.get('/admin/reports/token-autocomplete', { params }),
+  getReports: (params) => api.get('/admin/reports', { params })
 };
 
-// خدمات المستندات
+
 export const documents = {
   upload: (formData) => api.post('/documents/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data' }
   }),
   getAll: () => api.get('/documents'),
   getById: (id) => api.get(`/documents/${id}`),
   delete: (id) => api.delete(`/documents/${id}`),
   getHistory: () => api.get('/documents/history'),
   getStats: () => api.get('/documents/stats'),
+  getMyCIN: () => api.get('/documents/my-cin'),
+  updateEntities: (id, data) => api.put(`/documents/${id}/entities`, data)
 };
 
 export default api;

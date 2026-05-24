@@ -1,8 +1,9 @@
-// src/contexts/AuthContext.jsx
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext();
+
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -24,12 +25,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.get('/auth/me');
       if (response.data.success) {
-      setUser(response.data.user);
-      setIsAdmin(response.data.user.role === 'admin');
+        setUser(response.data.user);
+        setIsAdmin(response.data.user.role === 'admin');
       } else {
         localStorage.removeItem('token');
       }
-    } catch (error) {
+    } catch {
       localStorage.removeItem('token');
       setUser(null);
       setIsAdmin(false);
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
         setIsAdmin(response.data.user.role === 'admin');
-        return { success: true };
+        return { success: true, response: response.data };
       }
       return { success: false, error: response.data.error };
     } catch (error) {
@@ -68,6 +69,7 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
+        console.log('User role after email verification:', response.data.user.role);
         setIsAdmin(response.data.user.role === 'admin');
       }
       return response.data;
@@ -146,10 +148,10 @@ export const AuthProvider = ({ children }) => {
         resendCode,
         updateProfile,
         changePassword,
-        loadUser,
-      }}
-    >
+        loadUser
+      }}>
+      
       {children}
-    </AuthContext.Provider>
-  );
+    </AuthContext.Provider>);
+
 };

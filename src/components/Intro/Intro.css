@@ -100,8 +100,6 @@
   word-wrap: break-word;
    
 }
-
-/* Tablet (768px and below) */
 @media (max-width: 768px) {
 
   .intro-animation {
@@ -122,8 +120,6 @@
     font-size: 1rem;
   }
 }
-
-/* Small Tablet (600px and below) */
 @media (max-width: 600px) {
 
   .intro-footer {
@@ -141,8 +137,6 @@
     letter-spacing: 0.25px;
   }
 }
-
-/* Mobile (480px and below) */
 @media (max-width: 480px) {
 
   .intro-footer {
@@ -162,8 +156,6 @@
     max-width: 95%;
   }
 }
-
-/* Small Mobile (360px and below) */
 @media (max-width: 360px) {
   .intro-title {
     font-size: 1.5rem;
@@ -177,8 +169,6 @@
     gap: 0.25rem;
   }
 }
-
-/* Large Desktop (1200px and above) */
 @media (min-width: 1200px) {
 
   .intro-title {
@@ -192,8 +182,6 @@
 
 
 }
-
-/* Extra Large Desktop (1600px and above) */
 @media (min-width: 1600px) {
 
   .intro-title {

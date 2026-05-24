@@ -1,6 +1,6 @@
-// src/components/Admin/UserDetails.jsx
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, CheckCircle2, Save, Shield, UserRound, UserRoundX } from 'lucide-react';
 import { admin } from '../../services/api';
 import './UserDetails.css';
 
@@ -8,174 +8,168 @@ const UserDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    fetchUser();
+    const loadUser = async () => {
+      try {
+        const response = await admin.getUserById(id);
+        setUser(response.data || null);
+        setForm(response.data || {});
+      } catch (error) {
+        console.error('Failed to load user details', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
   }, [id]);
 
-  const fetchUser = async () => {
+  const updateField = (key, value) => {
+    setForm((previous) => ({ ...previous, [key]: value }));
+  };
+
+  const saveProfile = async (event) => {
+    event.preventDefault();
+    setSaving(true);
     try {
-      const response = await admin.getUserById(id);
-      setUser(response.data);
-      setFormData(response.data);
+      await admin.updateUser(id, form);
+      setUser(form);
+      setEditMode(false);
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error('Failed to save user profile', error);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await admin.updateUser(id, formData);
-      setEditing(false);
-      fetchUser();
-    } catch (error) {
-      console.error('Error updating user:', error);
+  const toggleVerification = async () => {
+    if (!user) {
+      return;
     }
-  };
-
-  const handleToggleStatus = async () => {
     try {
-      await admin.updateUser(id, { is_verified: !user.is_verified });
-      fetchUser();
+      const next = !user.is_verified;
+      await admin.updateUser(id, { is_verified: next });
+      setUser((previous) => ({ ...previous, is_verified: next }));
+      setForm((previous) => ({ ...previous, is_verified: next }));
     } catch (error) {
-      console.error('Error toggling status:', error);
+      console.error('Failed to toggle verification', error);
     }
   };
 
   if (loading) {
-    return <div className="loading">جاري التحميل...</div>;
+    return <div className="admin-page"><p className="admin-loading-note">Loading user details...</p></div>;
   }
 
   if (!user) {
-    return <div className="error">المستخدم غير موجود</div>;
+    return (
+      <div className="admin-page admin-user-details-page">
+        <p className="admin-loading-note">User not found.</p>
+      </div>);
+
   }
 
   return (
-    <div className="user-details">
-      <div className="details-header">
-        <button className="btn-back" onClick={() => navigate('/admin/users')}>
-          ← العودة إلى القائمة
+    <div className="admin-page admin-user-details-page">
+      <header className="admin-page-header">
+        <button type="button" className="admin-btn admin-btn-muted" onClick={() => navigate('/admin/users')}>
+          <ArrowLeft size={16} />
+          Back To Users
         </button>
-        <h1>تفاصيل المستخدم</h1>
-      </div>
+      </header>
 
-      <div className="details-content">
-        <div className="user-info-card">
-          <div className="user-avatar-large">
-            {user.username?.charAt(0) || '👤'}
-          </div>
-          <div className="user-basic-info">
-            <h2>{user.username}</h2>
-            <p>رقم البطاقة: <strong>{user.cin_number}</strong></p>
-            <p>البريد الإلكتروني: {user.email}</p>
-            <div className="user-status">
-              <span className={`status-badge ${user.is_verified ? 'status-verified' : 'status-pending'}`}>
-                {user.is_verified ? 'حساب موثق' : 'حساب غير موثق'}
+      <section className="admin-user-card admin-glass">
+        <div className="admin-user-top">
+          <span className="admin-user-avatar large">{user.username?.slice(0, 1)?.toUpperCase() || 'U'}</span>
+          <div>
+            <h1>{user.username || 'Unknown User'}</h1>
+            <p>{user.email || '-'}</p>
+            <div className="admin-row-actions compact">
+              <span className={`admin-pill ${user.is_verified ? 'admin-pill-success' : 'admin-pill-warning'}`}>
+                {user.is_verified ? 'Verified Account' : 'Pending Verification'}
               </span>
-              <span className={`role-badge role-${user.role}`}>
-                {user.role === 'admin' ? 'مسؤول' : 'مستخدم عادي'}
+              <span className={`admin-pill ${user.role === 'admin' ? 'admin-pill-accent' : 'admin-pill-muted'}`}>
+                {user.role || 'user'}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="details-actions">
-          <button className="btn-edit" onClick={() => setEditing(!editing)}>
-            {editing ? 'إلغاء التعديل' : '✏️ تعديل البيانات'}
+        <div className="admin-row-actions">
+          <button type="button" className="admin-btn admin-btn-muted" onClick={() => setEditMode((prev) => !prev)}>
+            <UserRound size={16} />
+            {editMode ? 'Cancel Edit' : 'Edit Profile'}
           </button>
-          <button className="btn-toggle" onClick={handleToggleStatus}>
-            {user.is_verified ? '🔒 تعطيل الحساب' : '✅ تفعيل الحساب'}
+          <button type="button" className="admin-btn admin-btn-primary" onClick={toggleVerification}>
+            {user.is_verified ? <UserRoundX size={16} /> : <CheckCircle2 size={16} />}
+            {user.is_verified ? 'Mark As Pending' : 'Verify Account'}
           </button>
         </div>
+      </section>
 
-        {editing ? (
-          <form className="edit-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>اسم المستخدم</label>
+      <section className="admin-user-details-grid">
+        <article className="admin-glass admin-info-list">
+          <h3>Identity</h3>
+          <p>
+            <strong>CIN:</strong> {user.cin_number || '-'}
+          </p>
+          <p>
+            <strong>Phone:</strong> {user.phone || '-'}
+          </p>
+          <p>
+            <strong>Address:</strong> {user.address || '-'}
+          </p>
+          <p>
+            <strong>Created:</strong> {user.created_at ? new Date(user.created_at).toLocaleString() : '-'}
+          </p>
+          <p>
+            <strong>Last Login:</strong> {user.last_login ? new Date(user.last_login).toLocaleString() : '-'}
+          </p>
+          <div className="admin-callout">
+            <Shield size={16} />
+            User security state is synchronized with latest role and verification flags.
+          </div>
+        </article>
+
+        <article className="admin-glass admin-user-form-card">
+          <h3>Profile Editor</h3>
+          <form onSubmit={saveProfile} className="admin-settings-group">
+            <label>
+              Username
               <input
-                type="text"
-                name="username"
-                value={formData.username || ''}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>البريد الإلكتروني</label>
+                value={form.username || ''}
+                onChange={(event) => updateField('username', event.target.value)}
+                disabled={!editMode} />
+              
+            </label>
+            <label>
+              Email
               <input
-                type="email"
-                name="email"
-                value={formData.email || ''}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>رقم الهاتف</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone || ''}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>العنوان</label>
-              <textarea
-                name="address"
-                value={formData.address || ''}
-                onChange={handleInputChange}
-                rows="3"
-              />
-            </div>
-            <div className="form-group">
-              <label>الدور</label>
-              <select name="role" value={formData.role || 'user'} onChange={handleInputChange}>
-                <option value="user">مستخدم</option>
-                <option value="admin">مسؤول</option>
+                value={form.email || ''}
+                onChange={(event) => updateField('email', event.target.value)}
+                disabled={!editMode} />
+              
+            </label>
+            <label>
+              Role
+              <select value={form.role || 'user'} onChange={(event) => updateField('role', event.target.value)} disabled={!editMode}>
+                <option value="user">user</option>
+                <option value="admin">admin</option>
               </select>
-            </div>
-            <button type="submit" className="btn-save">حفظ التغييرات</button>
+            </label>
+            <button type="submit" className="admin-btn admin-btn-primary" disabled={!editMode || saving}>
+              <Save size={16} />
+              {saving ? 'Saving...' : 'Save Profile'}
+            </button>
           </form>
-        ) : (
-          <div className="user-details-info">
-            <h3>معلومات إضافية</h3>
-            <div className="info-grid">
-              <div className="info-item">
-                <label>تاريخ التسجيل:</label>
-                <span>{new Date(user.created_at).toLocaleDateString('ar-TN')}</span>
-              </div>
-              <div className="info-item">
-                <label>آخر تسجيل دخول:</label>
-                <span>{user.last_login ? new Date(user.last_login).toLocaleDateString('ar-TN') : 'لم يسجل دخول بعد'}</span>
-              </div>
-              <div className="info-item">
-                <label>عدد المستندات:</label>
-                <span>{user.documents_count || 0}</span>
-              </div>
-              <div className="info-item">
-                <label>آخر نشاط:</label>
-                <span>{user.last_activity ? new Date(user.last_activity).toLocaleDateString('ar-TN') : 'لا يوجد نشاط'}</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+        </article>
+      </section>
+    </div>);
+
 };
 
 export default UserDetails;

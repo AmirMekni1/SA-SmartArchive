@@ -1,192 +1,169 @@
-// src/components/Admin/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { admin } from '../../services/api';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, ChartColumnBig, FileText, ShieldCheck, UserRoundCog, Users } from 'lucide-react';
+import { admin, documents } from '../../services/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [statistics, setStatistics] = useState({
-    totalUsers: 0,
-    totalDocuments: 0,
-    verifiedUsers: 0,
-    pendingVerifications: 0,
-    documentsToday: 0,
-    usersThisMonth: 0,
-    recentUsers: [],
-    recentDocuments: []
-  });
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({});
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [recentDocs, setRecentDocs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
+    const loadData = async () => {
+      try {
+        const [statsResponse, usersResponse, docsResponse] = await Promise.all([
+        admin.getStatistics(),
+        admin.getAllUsers(),
+        documents.getAll()]
+        );
+
+        const users = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+        const docs = Array.isArray(docsResponse.data) ? docsResponse.data : [];
+
+        setStats(statsResponse.data || {});
+        setRecentUsers(users.slice(0, 6));
+        setRecentDocs(docs.slice(0, 6));
+      } catch (error) {
+        console.error('Failed to load dashboard data', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await admin.getStatistics();
-      setStatistics(response.data);
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const kpis = useMemo(
+    () => [
+    {
+      label: 'Total Users',
+      value: stats.totalUsers || 0,
+      icon: Users,
+      tone: 'primary'
+    },
+    {
+      label: 'Verified Users',
+      value: stats.verifiedUsers || 0,
+      icon: ShieldCheck,
+      tone: 'success'
+    },
+    {
+      label: 'Total Documents',
+      value: stats.totalDocuments || 0,
+      icon: FileText,
+      tone: 'accent'
+    },
+    {
+      label: 'Documents Today',
+      value: stats.documentsToday || 0,
+      icon: ChartColumnBig,
+      tone: 'warning'
+    }],
 
-  const StatCard = ({ icon, title, value, color }) => (
-    <div className="admin-stat-card" style={{ borderTopColor: color }}>
-      <div className="admin-stat-icon" style={{ background: color }}>{icon}</div>
-      <div className="admin-stat-info">
-        <h3>{value}</h3>
-        <p>{title}</p>
-      </div>
-    </div>
+    [stats.documentsToday, stats.totalDocuments, stats.totalUsers, stats.verifiedUsers]
   );
-
-  if (loading) {
-    return <div className="loading">جاري التحميل...</div>;
-  }
 
   return (
-    <div className="admin-dashboard">
-      <div className="admin-dashboard-header">
-        <h1>لوحة تحكم المسؤول</h1>
-        <p>مرحباً بك في لوحة التحكم، يمكنك إدارة النظام بالكامل من هنا</p>
-      </div>
-
-      <div className="admin-stats-grid">
-        <StatCard 
-          icon="👥" 
-          title="إجمالي المستخدمين" 
-          value={statistics.totalUsers}
-          color="#4361ee"
-        />
-        <StatCard 
-          icon="✅" 
-          title="المستخدمين الموثقين" 
-          value={statistics.verifiedUsers}
-          color="#06d6a0"
-        />
-        <StatCard 
-          icon="⏳" 
-          title="بانتظار التأكيد" 
-          value={statistics.pendingVerifications}
-          color="#ffd166"
-        />
-        <StatCard 
-          icon="📄" 
-          title="إجمالي المستندات" 
-          value={statistics.totalDocuments}
-          color="#f72585"
-        />
-        <StatCard 
-          icon="📈" 
-          title="مستندات اليوم" 
-          value={statistics.documentsToday}
-          color="#118ab2"
-        />
-        <StatCard 
-          icon="📊" 
-          title="مستخدمين جدد هذا الشهر" 
-          value={statistics.usersThisMonth}
-          color="#2ecc71"
-        />
-      </div>
-
-      <div className="admin-sections">
-        <div className="admin-section">
-          <h2>آخر المستخدمين المسجلين</h2>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>رقم البطاقة</th>
-                <th>اسم المستخدم</th>
-                <th>البريد الإلكتروني</th>
-                <th>تاريخ التسجيل</th>
-                <th>الحالة</th>
-                <th>الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {statistics.recentUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.cin_number}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{new Date(user.created_at).toLocaleDateString('ar-TN')}</td>
-                  <td>
-                    <span className={`status-badge ${user.is_verified ? 'status-verified' : 'status-pending'}`}>
-                      {user.is_verified ? 'موثق' : 'غير موثق'}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="btn-view">عرض</button>
-                    <button className="btn-edit">تعديل</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="admin-page admin-dashboard">
+      <header className="admin-hero admin-glass">
+        <div>
+          <span className="admin-eyebrow">Mission Control</span>
+          <h1>Admin Dashboard</h1>
+          <p>
+            Centralize user governance, document flow, and system insights with a smooth command
+            interface.
+          </p>
         </div>
+        <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/admin/users')}>
+          <UserRoundCog size={16} />
+          Manage Users
+        </button>
+      </header>
 
-        <div className="admin-section">
-          <h2>آخر المستندات المرفوعة</h2>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>اسم الملف</th>
-                <th>المستخدم</th>
-                <th>تاريخ الرفع</th>
-                <th>الحالة</th>
-                <th>الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {statistics.recentDocuments.map((doc) => (
-                <tr key={doc.id}>
-                  <td>{doc.filename}</td>
-                  <td>{doc.username}</td>
-                  <td>{new Date(doc.created_at).toLocaleDateString('ar-TN')}</td>
-                  <td>
-                    <span className={`status-badge status-${doc.status}`}>
-                      {doc.status === 'processed' ? 'تمت المعالجة' : 'قيد المعالجة'}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="btn-view">عرض</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <section className="admin-stats-grid">
+        {kpis.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <article key={item.label} className={`admin-stat-card ${item.tone}`} style={{ '--delay': `${(index + 1) * 0.05}s` }}>
+              <Icon size={20} />
+              <h3>{item.value}</h3>
+              <p>{item.label}</p>
+            </article>);
 
-      <div className="admin-quick-actions">
-        <h2>إجراءات سريعة</h2>
-        <div className="quick-actions-grid">
-          <div className="quick-action" onClick={() => window.location.href = '/admin/users'}>
-            <div className="action-icon">👥</div>
-            <h3>إدارة المستخدمين</h3>
-            <p>عرض، تعديل، وحذف المستخدمين</p>
+        })}
+      </section>
+
+      <section className="admin-panels-grid">
+        <article className="admin-panel admin-glass">
+          <div className="admin-panel-head">
+            <h2>Recent Users</h2>
+            <button type="button" className="admin-text-btn" onClick={() => navigate('/admin/users')}>
+              Open All <ArrowRight size={14} />
+            </button>
           </div>
-          <div className="quick-action" onClick={() => window.location.href = '/admin/documents'}>
-            <div className="action-icon">📄</div>
-            <h3>إدارة المستندات</h3>
-            <p>عرض جميع المستندات المرفوعة</p>
+
+          <div className="admin-list">
+            {recentUsers.map((user) =>
+            <button
+              type="button"
+              key={user.id}
+              className="admin-list-item"
+              onClick={() => navigate(`/admin/users/${user.id}`)}>
+              
+                <span className="admin-user-avatar">{user.username?.slice(0, 1)?.toUpperCase() || 'U'}</span>
+                <div>
+                  <strong>{user.username || 'Unknown User'}</strong>
+                  <small>{user.email || '-'}</small>
+                </div>
+                <span className={`admin-pill ${user.is_verified ? 'admin-pill-success' : 'admin-pill-warning'}`}>
+                  {user.is_verified ? 'Verified' : 'Pending'}
+                </span>
+              </button>
+            )}
+            {!loading && recentUsers.length === 0 && <p className="admin-empty-line">No user activity found.</p>}
           </div>
-          <div className="quick-action" onClick={() => window.location.href = '/admin/statistics'}>
-            <div className="action-icon">📊</div>
-            <h3>الإحصائيات</h3>
-            <p>تقارير وإحصائيات مفصلة</p>
+        </article>
+
+        <article className="admin-panel admin-glass">
+          <div className="admin-panel-head">
+            <h2>Recent Documents</h2>
+            <button type="button" className="admin-text-btn" onClick={() => navigate('/admin/documents')}>
+              Open All <ArrowRight size={14} />
+            </button>
           </div>
-          <div className="quick-action" onClick={() => window.location.href = '/admin/settings'}>
-            <div className="action-icon">⚙️</div>
-            <h3>إعدادات النظام</h3>
-            <p>تكوين النظام وإعداداته</p>
+
+          <div className="admin-list">
+            {recentDocs.map((doc) =>
+            <div key={doc.id} className="admin-list-item">
+                <span className="admin-pill admin-pill-muted">{doc.type || 'file'}</span>
+                <div>
+                  <strong>{doc.filename || 'Untitled Document'}</strong>
+                  <small>{doc.username || 'Unknown owner'}</small>
+                </div>
+                <span
+                className={`admin-pill ${
+                String(doc.status).toLowerCase() === 'processed' ?
+                'admin-pill-success' :
+                String(doc.status).toLowerCase() === 'failed' ?
+                'admin-pill-danger' :
+                'admin-pill-warning'}`
+                }>
+                
+                  {doc.status || 'pending'}
+                </span>
+              </div>
+            )}
+            {!loading && recentDocs.length === 0 &&
+            <p className="admin-empty-line">No document activity found.</p>
+            }
           </div>
-        </div>
-      </div>
-    </div>
-  );
+        </article>
+      </section>
+    </div>);
+
 };
 
 export default AdminDashboard;

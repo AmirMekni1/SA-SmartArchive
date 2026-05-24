@@ -1,141 +1,146 @@
-/* src/components/Admin/Settings.css */
-.settings {
-  animation: fadeIn 0.5s ease forwards;
+@import './AdminDashboard.css';
+
+.admin-settings-layout {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0.75rem;
 }
 
-.settings-header {
-  margin-bottom: var(--spacing-2xl);
+.admin-settings-tabs {
+  padding: 0.55rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
 }
 
-.settings-header h1 {
-  margin-bottom: var(--spacing-sm);
-  color: var(--dark);
-}
-
-.settings-header p {
-  color: var(--gray);
-}
-
-.settings-message {
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-lg);
+.admin-tab-btn {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: #fff;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 0.4rem;
+  padding: 0.55rem 0.7rem;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.settings-message.success {
-  background: rgba(6, 214, 160, 0.1);
-  border: 1px solid var(--success);
-  color: var(--success);
+.admin-tab-btn.is-active {
+  border-color: rgba(0, 109, 119, 0.24);
+  background: #eef9f8;
+  color: #005962;
 }
 
-.settings-form {
-  max-width: 800px;
+.admin-settings-panel {
+  padding: 1rem;
 }
 
-.settings-section {
-  background: white;
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-sm);
+.admin-settings-group {
+  display: grid;
+  gap: 0.8rem;
 }
 
-.settings-section h2 {
-  margin-bottom: var(--spacing-lg);
-  color: var(--dark);
-  font-size: 1.25rem;
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--gray-light);
+.admin-settings-note,
+.admin-settings-error {
+  margin: 0 0 0.7rem;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-weight: 600;
+  font-size: 0.92rem;
 }
 
-.form-group {
-  margin-bottom: var(--spacing-lg);
+.admin-settings-note {
+  color: #265b84;
+  background: #eef5fb;
+  border: 1px solid rgba(38, 91, 132, 0.2);
 }
 
-.form-group label {
+.admin-settings-error {
+  color: #8f2b3f;
+  background: #fff1f3;
+  border: 1px solid rgba(183, 47, 81, 0.22);
+}
+
+.admin-settings-group label {
+  display: grid;
+  gap: 0.35rem;
+  color: #344054;
+  font-weight: 600;
+}
+
+.admin-settings-group input,
+.admin-settings-group select {
+  border: 1px solid rgba(22, 28, 45, 0.12);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.55rem 0.7rem;
+  color: #1f2937;
+}
+
+.admin-switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.admin-switch-row input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: #006d77;
+}
+
+.admin-switch-row small {
   display: block;
-  margin-bottom: var(--spacing-sm);
+  color: #64748b;
   font-weight: 500;
-  color: var(--dark);
 }
 
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: var(--spacing-md);
-  border: 2px solid var(--gray-light);
-  border-radius: var(--radius-lg);
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-}
-
-.form-group.checkbox label {
+.admin-callout {
+  border-radius: 12px;
+  background: #eef9f8;
+  color: #165e66;
+  border: 1px solid rgba(0, 109, 119, 0.2);
+  padding: 0.55rem 0.7rem;
   display: flex;
+  gap: 0.4rem;
   align-items: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
+  font-size: 0.88rem;
 }
 
-.form-group.checkbox input {
-  width: auto;
-}
-
-.checkbox-group {
+.admin-settings-actions {
+  margin-top: 0.75rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-}
-
-.checkbox-group label {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
-  font-weight: normal;
+  gap: 0.5rem;
 }
 
-.settings-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-xl);
+.admin-saved-message {
+  color: #256d55;
+  font-weight: 700;
+  margin: 0;
 }
 
-.btn-save,
-.btn-reset {
-  padding: var(--spacing-md) var(--spacing-xl);
-  border: none;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
+@media (max-width: 900px) {
+  .admin-settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-settings-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.btn-save {
-  background: var(--gradient-primary);
-  color: white;
-}
+@media (max-width: 620px) {
+  .admin-settings-tabs {
+    grid-template-columns: 1fr;
+  }
 
-.btn-reset {
-  background: var(--gray-light);
-  color: var(--dark);
-}
-
-.btn-save:hover,
-.btn-reset:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  .admin-settings-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

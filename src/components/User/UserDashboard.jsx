@@ -1,10 +1,25 @@
-// components/User/UserDashboard.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { documents } from '../../services/api';
 import '../styles/user.css';
 import './UserDashboard.css';
+
+const StatCard = ({ icon, title, value, trend, tone }) =>
+<div className={`dashboard-stat-card ${tone}`}>
+    <div className="dashboard-stat-icon">{icon}</div>
+    <div className="stat-card-info">
+      <p>{title}</p>
+      <h3>{value}</h3>
+      {trend &&
+    <span className={`dashboard-trend ${trend > 0 ? 'positive' : 'negative'}`}>
+          {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+        </span>
+    }
+    </div>
+  </div>;
+
 
 const UserDashboard = () => {
   const { user } = useAuth();
@@ -16,6 +31,7 @@ const UserDashboard = () => {
   });
   const [recentDocuments, setRecentDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -23,13 +39,19 @@ const UserDashboard = () => {
 
   const fetchData = async () => {
     try {
+      setError('');
       const historyResponse = await documents.getHistory();
-      setRecentDocuments(historyResponse.data.slice(0, 5));
-      
+      const history = Array.isArray(historyResponse.data) ? historyResponse.data : [];
+      setRecentDocuments(history.slice(0, 5));
+
       const statsResponse = await documents.getStats();
-      setStats(statsResponse.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+      setStats((previous) => ({
+        ...previous,
+        ...(statsResponse.data || {})
+      }));
+    } catch (requestError) {
+      console.error('Error fetching data:', requestError);
+      setError('Could not load dashboard data. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -45,23 +67,8 @@ const UserDashboard = () => {
   const activityPercent = Math.min(
     100,
     Math.round(
-      ((stats.processedToday || 0) / Math.max(stats.totalDocuments || 1, 1)) * 100
+      (stats.processedToday || 0) / Math.max(stats.totalDocuments || 1, 1) * 100
     )
-  );
-
-  const StatCard = ({ icon, title, value, trend, tone }) => (
-    <div className={`dashboard-stat-card ${tone}`}>
-      <div className="dashboard-stat-icon">{icon}</div>
-      <div className="stat-card-info">
-        <p>{title}</p>
-        <h3>{value}</h3>
-        {trend && (
-          <span className={`dashboard-trend ${trend > 0 ? 'positive' : 'negative'}`}>
-            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
-          </span>
-        )}
-      </div>
-    </div>
   );
 
   if (loading) {
@@ -121,35 +128,37 @@ const UserDashboard = () => {
           </div>
         </div>
 
+        {error && <p className="dashboard-empty-line">{error}</p>}
+
         <div className="dashboard-stats-grid">
-        <StatCard 
-          icon="📄"
-          title="Total documents" 
-          value={stats.totalDocuments}
-          trend={12}
-          tone="tone-blue"
-        />
-        <StatCard 
-          icon="✅" 
-          title="Processed today" 
-          value={stats.processedToday}
-          trend={8}
-          tone="tone-green"
-        />
-        <StatCard 
-          icon="⏳" 
-          title="In progress" 
-          value={stats.pendingDocuments}
-          trend={-3}
-          tone="tone-amber"
-        />
-        <StatCard 
-          icon="🎯" 
-          title="Extraction accuracy" 
-          value={`${stats.accuracy}%`}
-          trend={2}
-          tone="tone-rose"
-        />
+        <StatCard
+            icon="📄"
+            title="Total documents"
+            value={stats.totalDocuments}
+            trend={12}
+            tone="tone-blue" />
+          
+        <StatCard
+            icon="✅"
+            title="Processed today"
+            value={stats.processedToday}
+            trend={8}
+            tone="tone-green" />
+          
+        <StatCard
+            icon="⏳"
+            title="In progress"
+            value={stats.pendingDocuments}
+            trend={-3}
+            tone="tone-amber" />
+          
+        <StatCard
+            icon="🎯"
+            title="Extraction accuracy"
+            value={`${stats.accuracy}%`}
+            trend={2}
+            tone="tone-rose" />
+          
         </div>
       </section>
 
@@ -200,10 +209,10 @@ const UserDashboard = () => {
           </Link>
         </div>
 
-        {recentDocuments.length > 0 ? (
-          <div className="dashboard-document-list">
-            {recentDocuments.map((doc, index) => (
-              <div className="dashboard-document-row" key={doc.id || doc._id || index}>
+        {recentDocuments.length > 0 ?
+        <div className="dashboard-document-list">
+            {recentDocuments.map((doc, index) =>
+          <div className="dashboard-document-row" key={doc.id || doc._id || index}>
                 <div className="dashboard-document-main">
                   <div className="dashboard-document-icon">DOC</div>
                   <div>
@@ -221,10 +230,10 @@ const UserDashboard = () => {
                   </Link>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="dashboard-empty-state">
+          )}
+          </div> :
+
+        <div className="dashboard-empty-state">
             <div className="dashboard-empty-icon">+</div>
             <h3>No documents uploaded yet</h3>
             <p>Upload your first document and your latest activity will appear here.</p>
@@ -232,10 +241,10 @@ const UserDashboard = () => {
               Upload new document
             </Link>
           </div>
-        )}
+        }
       </section>
-    </div>
-  );
+    </div>);
+
 };
 
 export default UserDashboard;

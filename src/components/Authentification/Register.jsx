@@ -1,4 +1,4 @@
-// src/components/Auth/Register.jsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -29,21 +29,21 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     setLoading(true);
-    
+
     const result = await register({
       cin_number: formData.cin_number,
       email: formData.email,
       username: formData.username,
       password: formData.password
     });
-    
+
     if (result.success) {
       navigate('/verify-email', { state: { email: formData.email } });
     } else {
@@ -82,8 +82,8 @@ const Register = () => {
                   value={formData.cin_number}
                   onChange={handleChange}
                   maxLength="8"
-                  required
-                />
+                  required />
+                
               </div>
             </div>
 
@@ -97,8 +97,8 @@ const Register = () => {
                   placeholder="example@email.com"
                   value={formData.email}
                   onChange={handleChange}
-                  required
-                />
+                  required />
+                
               </div>
             </div>
 
@@ -112,8 +112,8 @@ const Register = () => {
                   placeholder="Enter your username"
                   value={formData.username}
                   onChange={handleChange}
-                  required
-                />
+                  required />
+                
               </div>
             </div>
 
@@ -127,13 +127,13 @@ const Register = () => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
-                />
-                <button 
+                  required />
+                
+                <button
                   type="button"
                   className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                  onClick={() => setShowPassword(!showPassword)}>
+                  
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
@@ -149,24 +149,24 @@ const Register = () => {
                   placeholder="Re-enter your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  required
-                />
-                <button 
+                  required />
+                
+                <button
                   type="button"
                   className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  
                   {showConfirmPassword ? '🙈' : '👁️'}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="error-message">
+            {error &&
+            <div className="error-message">
                 <span>⚠️</span>
                 <p>{error}</p>
               </div>
-            )}
+            }
 
             <button type="submit" className="btn-submit" disabled={loading}>
               {loading ? 'Creating account...' : 'Create account'}
@@ -178,8 +178,8 @@ const Register = () => {
           </form>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Register;

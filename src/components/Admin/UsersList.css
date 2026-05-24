@@ -1,4 +1,17 @@
-/* src/components/Admin/UsersList.css */
+@import './AdminDashboard.css';
+
+.users-management-page .admin-page-header {
+  margin-bottom: 0.25rem;
+}
+
+.users-management-page .admin-stats-grid {
+  margin-top: 0.65rem;
+}
+
+.users-management-page .admin-stat-card {
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(248, 251, 251, 0.95));
+}
 .users-list {
   animation: fadeIn 0.5s ease forwards;
 }

@@ -1,0 +1,117 @@
+@import './AdminDashboard.css';
+
+.admin-document-details-page {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.admin-document-details-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.admin-document-details-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 0.8rem;
+}
+
+.admin-document-details-card {
+  padding: 1rem;
+}
+
+.admin-document-details-card h2 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.05rem;
+}
+
+.admin-document-meta-grid {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.admin-document-meta-grid div {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.admin-document-meta-grid strong {
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+.admin-document-inline-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.admin-document-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.admin-inline-link {
+  text-decoration: none;
+}
+
+.admin-document-note {
+  margin: 0.8rem 0 0;
+  color: var(--admin-muted);
+  line-height: 1.5;
+}
+
+.admin-document-json {
+  margin: 0.8rem 0 0;
+  border-radius: 12px;
+  padding: 0.75rem;
+  max-height: 320px;
+  overflow: auto;
+  background: #f7fafc;
+  border: 1px solid var(--admin-border);
+  font-size: 0.8rem;
+}
+
+.admin-document-editarea {
+  width: 100%;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 0.7rem;
+  color: #0f172a;
+  font-size: 0.86rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  margin-bottom: 0.7rem;
+}
+
+.admin-document-error {
+  margin: 0;
+  color: #a6384b;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .admin-document-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-document-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}

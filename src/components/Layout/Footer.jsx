@@ -1,4 +1,4 @@
-// src/components/Layout/Footer.jsx
+
 import React from 'react';
 import './Footer.css';
 
@@ -11,8 +11,8 @@ const Footer = () => {
         <p>© {currentYear} منصة التعريف الوطنية. جميع الحقوق محفوظة.</p>
         <p>Version 1.0.0</p>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default Footer;

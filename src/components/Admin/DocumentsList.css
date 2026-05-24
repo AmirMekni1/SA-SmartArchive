@@ -1,4 +1,20 @@
-/* src/components/Admin/DocumentsList.css */
+@import './AdminDashboard.css';
+
+.documents-management-page .admin-page-header {
+  margin-bottom: 0.2rem;
+}
+
+.documents-management-page .admin-stat-card {
+  background: linear-gradient(160deg, #ffffff, #f5fbfc);
+}
+
+.documents-management-page .admin-doc-cell {
+  align-items: flex-start;
+}
+
+.documents-management-page .admin-doc-cell strong {
+  display: block;
+}
 .documents-list {
   animation: fadeIn 0.5s ease forwards;
 }

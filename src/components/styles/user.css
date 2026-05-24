@@ -1,5 +1,3 @@
-/* styles/user.css */
-
 @keyframes userShellFadeIn {
   from {
     opacity: 0;
@@ -32,8 +30,6 @@
     transform: translateX(0);
   }
 }
-
-/* ==================== USER LAYOUT ==================== */
 .user-layout {
   min-height: 100vh;
   display: flex;
@@ -59,8 +55,6 @@
 .user-content.expanded {
   margin-right: 80px;
 }
-
-/* ==================== USER NAVBAR ==================== */
 .user-navbar {
   position: fixed;
   top: 0;
@@ -211,8 +205,6 @@
 .dropdown-item hr {
   margin: 0.5rem 0;
 }
-
-/* ==================== USER SIDEBAR ==================== */
 .user-sidebar {
   position: fixed;
   right: 0;
@@ -310,8 +302,6 @@
 .sidebar-icon {
   font-size: 1.25rem;
 }
-
-/* ==================== USER DASHBOARD ==================== */
 .user-dashboard {
   animation: fadeIn 0.5s ease;
 }
@@ -565,8 +555,6 @@
   cursor: pointer;
   margin-top: 1rem;
 }
-
-/* ==================== MY CIN PAGE ==================== */
 .my-cin-page {
   animation: fadeIn 0.5s ease;
 }
@@ -720,8 +708,6 @@
   cursor: pointer;
   margin-top: 1rem;
 }
-
-/* ==================== FOOTER ==================== */
 .user-footer {
   background: white;
   border-top: 1px solid #ecf0f1;
@@ -730,8 +716,6 @@
   font-size: 0.75rem;
   color: #7f8c8d;
 }
-
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
   .user-content {
     margin-right: 0 !important;

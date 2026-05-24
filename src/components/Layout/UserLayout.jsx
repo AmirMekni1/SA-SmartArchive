@@ -1,4 +1,4 @@
-// components/Layout/UserLayout.jsx
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import UserNavbar from './UserNavbar';
@@ -19,8 +19,8 @@ const UserLayout = () => {
         </main>
       </div>
       <UserFooter />
-    </div>
-  );
+    </div>);
+
 };
 
 export default UserLayout;

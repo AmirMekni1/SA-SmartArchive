@@ -1,11 +1,11 @@
-// src/components/Auth/Login.jsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Login.css';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, loadUser } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     cin_number: '',
@@ -26,11 +26,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const result = await login(formData.cin_number, formData.password);
-    
+    console.log('Login result:', result);
     if (result.success) {
-      navigate('/dashboard');
+      localStorage.setItem('token', result.response.token);
+      await loadUser();
+      navigate('/welcom', { replace: true });
+
     } else {
       setError(result.error);
     }
@@ -94,8 +97,8 @@ const Login = () => {
                     value={formData.cin_number}
                     onChange={handleChange}
                     maxLength="8"
-                    required
-                  />
+                    required />
+                  
                 </div>
               </div>
 
@@ -115,25 +118,25 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
-                    required
-                  />
+                    required />
+                  
                   <button
                     type="button"
                     className="login-password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                    
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
 
-              {error && (
-                <div className="login-error-message">
+              {error &&
+              <div className="login-error-message">
                   <span className="login-error-dot"></span>
                   <p>{error}</p>
                 </div>
-              )}
+              }
 
               <div className="login-form-options">
                 <label className="login-checkbox">
@@ -154,14 +157,14 @@ const Login = () => {
               </Link>
 
               <div className="login-footer">
-                Don&apos;t have an account? <Link to="/register">Create a new account</Link>
+                Don&apos;t have an account? <Link to="/">Create a new account</Link>
               </div>
             </form>
           </div>
         </section>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Login;

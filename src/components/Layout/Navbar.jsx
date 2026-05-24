@@ -1,4 +1,4 @@
-// src/components/Layout/Navbar.jsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,10 +24,10 @@ const Navbar = () => {
 
         <div className="navbar-menu">
           <div className="user-menu">
-            <button 
+            <button
               className="user-menu-trigger"
-              onClick={() => setShowMenu(!showMenu)}
-            >
+              onClick={() => setShowMenu(!showMenu)}>
+              
               <div className="user-avatar">
                 {user?.username?.charAt(0) || '👤'}
               </div>
@@ -35,27 +35,27 @@ const Navbar = () => {
               <span className="dropdown-arrow">▼</span>
             </button>
             
-            {showMenu && (
-              <div className="user-dropdown">
+            {showMenu &&
+            <div className="user-dropdown">
                 <Link to="/profile" className="dropdown-item">
                   <span>👤</span> الملف الشخصي
                 </Link>
-                {isAdmin && (
-                  <Link to="/admin/dashboard" className="dropdown-item">
+                {isAdmin &&
+              <Link to="/admin/dashboard" className="dropdown-item">
                     <span>⚙️</span> لوحة التحكم
                   </Link>
-                )}
+              }
                 <hr className="dropdown-divider" />
                 <button onClick={handleLogout} className="dropdown-item logout">
                   <span>🚪</span> تسجيل الخروج
                 </button>
               </div>
-            )}
+            }
           </div>
         </div>
       </div>
-    </nav>
-  );
+    </nav>);
+
 };
 
 export default Navbar;

@@ -1,4 +1,3 @@
-/* UploadDocument.css */
 .upload-document {
   padding: 2rem;
   max-width: 800px;
@@ -250,6 +249,12 @@
   font-size: 0.9rem;
 }
 
+.status-failed {
+  color: #f5576c;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .remove-btn {
   background: #f5576c;
   color: white;
@@ -321,8 +326,6 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .upload-document {
     padding: 1rem;

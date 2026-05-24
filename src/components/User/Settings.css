@@ -1,4 +1,3 @@
-/* Settings.css */
 .settings {
   padding: 2rem;
   max-width: 1000px;
@@ -312,8 +311,6 @@
 .enable-2fa-btn:hover {
   background: #38d66b;
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .settings {
     padding: 1rem;

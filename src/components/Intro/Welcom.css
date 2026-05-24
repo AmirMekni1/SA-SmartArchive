@@ -1,0 +1,115 @@
+.welcom-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  background: #0a1218;
+}
+
+.welcom-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: welcomZoom 3.8s ease-in-out forwards;
+}
+
+.welcom-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(12, 32, 47, 0.2), transparent 42%),
+    radial-gradient(circle at 84% 85%, rgba(198, 108, 35, 0.22), transparent 38%),
+    linear-gradient(180deg, rgba(5, 12, 17, 0.25), rgba(5, 12, 17, 0.65));
+}
+
+.welcom-content {
+  position: relative;
+  z-index: 1;
+  width: min(88vw, 760px);
+  color: #f2f6f7;
+  text-align: center;
+  padding: 1.25rem;
+  animation: welcomFadeUp 0.85s ease-out both;
+}
+
+.welcom-eyebrow {
+  margin: 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cce5ea;
+}
+
+.welcom-title {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.75rem, 4.4vw, 3.1rem);
+  line-height: 1.15;
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.welcom-subtitle {
+  margin: 0.65rem 0 1.1rem;
+  font-size: clamp(0.95rem, 2.1vw, 1.2rem);
+  color: #d5e5e8;
+}
+
+.welcom-progress {
+  width: min(100%, 420px);
+  height: 10px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.welcom-progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0fb8c0, #f3a64f);
+  animation: welcomProgress 3.8s linear forwards;
+}
+
+@keyframes welcomFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes welcomZoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes welcomProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .welcom-content {
+    padding: 1rem 0.9rem;
+  }
+
+  .welcom-progress {
+    height: 8px;
+  }
+}

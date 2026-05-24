@@ -1,11 +1,8 @@
-/* DashboardHome.css */
 .dashboard-home {
     padding: var(--spacing-xl);
     background: #f8f9fa;
     min-height: 100vh;
 }
-
-/* قسم الترحيب */
 .welcome-section {
     background: var(--gradient-primary);
     border-radius: var(--radius-2xl);
@@ -63,8 +60,6 @@
     position: relative;
     z-index: 1;
 }
-
-/* بطاقات الإحصائيات */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -122,8 +117,6 @@
 .stat-trend.negative {
     color: var(--danger);
 }
-
-/* الإجراءات السريعة */
 .quick-actions-section {
     margin-bottom: var(--spacing-2xl);
 }
@@ -163,8 +156,6 @@
     font-size: 0.875rem;
     margin-bottom: var(--spacing-lg);
 }
-
-/* قسم النشاط */
 .activity-section {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
@@ -228,8 +219,6 @@
     background: var(--warning);
     color: white;
 }
-
-/* مخطط */
 .chart-placeholder {
     padding: var(--spacing-md);
 }
@@ -260,8 +249,6 @@
     color: var(--gray);
     font-size: 0.75rem;
 }
-
-/* استجابة */
 @media (max-width: 1024px) {
     .activity-section {
         grid-template-columns: 1fr;

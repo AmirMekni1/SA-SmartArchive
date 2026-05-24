@@ -1,4 +1,4 @@
-// components/Layout/UserNavbar.jsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -16,10 +16,10 @@ const UserNavbar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <nav className="user-navbar">
       <div className="navbar-container">
-        <button 
+        <button
           className="sidebar-toggle"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
+          onClick={() => setSidebarOpen(!sidebarOpen)}>
+          
           ☰
         </button>
 
@@ -35,10 +35,10 @@ const UserNavbar = ({ sidebarOpen, setSidebarOpen }) => {
           </button>
           
           <div className="user-menu">
-            <button 
+            <button
               className="user-menu-trigger"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-            >
+              onClick={() => setShowUserMenu(!showUserMenu)}>
+              
               <div className="user-avatar">
                 {user?.username?.charAt(0) || 'U'}
               </div>
@@ -46,8 +46,8 @@ const UserNavbar = ({ sidebarOpen, setSidebarOpen }) => {
               <span className="dropdown-icon">▼</span>
             </button>
             
-            {showUserMenu && (
-              <div className="user-dropdown">
+            {showUserMenu &&
+            <div className="user-dropdown">
                 <Link to="/profile" className="dropdown-item">
                   <span>👤</span> Profile
                 </Link>
@@ -59,12 +59,12 @@ const UserNavbar = ({ sidebarOpen, setSidebarOpen }) => {
                   <span>🚪</span> Sign out
                 </button>
               </div>
-            )}
+            }
           </div>
         </div>
       </div>
-    </nav>
-  );
+    </nav>);
+
 };
 
 export default UserNavbar;

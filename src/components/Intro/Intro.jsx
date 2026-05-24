@@ -10,8 +10,8 @@ export default function IntroLogo() {
           <DotLottieReact
             src="https://lottie.host/a4d5ea1a-508b-4d52-be49-9ee311e5ee41/1bxlvnWy5m.lottie"
             loop={false}
-            autoplay
-          />
+            autoplay />
+          
         </div>
         <div className="intro-footer">
           <h1 className="intro-title">SmartArchive</h1>
@@ -20,6 +20,6 @@ export default function IntroLogo() {
           </p>
         </div>
       </div>
-    </>
-  );
+    </>);
+
 }

@@ -1,4 +1,57 @@
-/* src/components/Admin/Statistics.css */
+@import './AdminDashboard.css';
+
+.reports-page .admin-chart-card {
+  min-height: 340px;
+}
+.reports-page .admin-chart-card h3 {
+  font-size: 1rem;
+}
+
+.reports-page .admin-stats-grid {
+  margin-top: 0.65rem;
+}
+
+.admin-report-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin: 0.7rem 0;
+}
+
+.admin-report-filters input {
+  border: 1px solid rgba(17, 24, 39, 0.16);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff;
+}
+
+.admin-report-table-wrap {
+  overflow: auto;
+}
+
+.admin-report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-report-table th,
+.admin-report-table td {
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  padding: 0.55rem;
+  font-size: 0.88rem;
+}
+
+.admin-report-table thead th {
+  font-weight: 700;
+  color: #475467;
+}
+
+@media (max-width: 900px) {
+  .admin-report-filters {
+    grid-template-columns: 1fr;
+  }
+}
 .statistics {
   animation: fadeIn 0.5s ease forwards;
 }

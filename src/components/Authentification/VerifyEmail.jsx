@@ -1,4 +1,4 @@
-// src/components/Auth/VerifyEmail.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,7 +14,7 @@ const VerifyEmail = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [countdown, setCountdown] = useState(0);
-  
+
   const email = location.state?.email || '';
 
   useEffect(() => {
@@ -37,14 +37,14 @@ const VerifyEmail = () => {
       setError('Please enter the 6-digit verification code');
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     const result = await verifyEmail(email, code);
-    
+
     if (result.success) {
-      navigate('/dashboard');
+      navigate('/welcom', { replace: true });
     } else {
       setError(result.error);
     }
@@ -55,9 +55,9 @@ const VerifyEmail = () => {
     setResending(true);
     setError('');
     setSuccess('');
-    
+
     const result = await resendCode(email);
-    
+
     if (result.success) {
       setSuccess('A new verification code has been sent to your email');
       setCountdown(60);
@@ -100,24 +100,24 @@ const VerifyEmail = () => {
                   onChange={(e) => setCode(e.target.value)}
                   maxLength="6"
                   required
-                  className="verification-input"
-                />
+                  className="verification-input" />
+                
               </div>
             </div>
 
-            {error && (
-              <div className="error-message">
+            {error &&
+            <div className="error-message">
                 <span>⚠️</span>
                 <p>{error}</p>
               </div>
-            )}
+            }
 
-            {success && (
-              <div className="success-message">
+            {success &&
+            <div className="success-message">
                 <span>✅</span>
                 <p>{success}</p>
               </div>
-            )}
+            }
 
             <button type="submit" className="btn-submit" disabled={loading}>
               {loading ? 'Verifying...' : 'Confirm'}
@@ -128,20 +128,20 @@ const VerifyEmail = () => {
                 type="button"
                 className="resend-link"
                 onClick={handleResend}
-                disabled={resending || countdown > 0}
-              >
-                {resending 
-                  ? 'Sending...' 
-                  : countdown > 0 
-                    ? `Resend code (${countdown}s)` 
-                    : 'Resend code'}
+                disabled={resending || countdown > 0}>
+                
+                {resending ?
+                'Sending...' :
+                countdown > 0 ?
+                `Resend code (${countdown}s)` :
+                'Resend code'}
               </button>
             </div>
           </form>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default VerifyEmail;

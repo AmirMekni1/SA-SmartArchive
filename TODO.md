@@ -1,6 +1,6 @@
 # Task: Correct /auth/me Backend + Frontend Auth Flow
 
-## Steps:
+
 - [x] 1. Fix backend syntax error in auth.routes.js  
 - [x] 2. Enhance /me endpoint in auth.routes.js
 - [x] 3. Fix frontend Auth.jsx handleCodeSubmit (raw axios → api.post)

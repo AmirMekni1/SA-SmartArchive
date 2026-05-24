@@ -1,0 +1,127 @@
+.notifications-page {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.notifications-header h2 {
+  margin: 0;
+}
+
+.notifications-header p {
+  margin: 0.25rem 0 0;
+  color: #5c6c7b;
+}
+
+.notifications-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notifications-actions button,
+.notifications-filter button,
+.notification-item button {
+  border: 1px solid #d4dde6;
+  background: #ffffff;
+  color: #23313f;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
+.notifications-actions button:disabled,
+.notification-item button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notifications-filter {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notifications-filter button.active {
+  background: #1f6feb;
+  color: #ffffff;
+  border-color: #1f6feb;
+}
+
+.notifications-state {
+  margin: 0.5rem 0;
+  color: #5c6c7b;
+}
+
+.notifications-state.error {
+  color: #b42318;
+}
+
+.notifications-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e4ebf2;
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.notification-item.unread {
+  border-left: 4px solid #1f6feb;
+}
+
+.notification-item.read {
+  opacity: 0.8;
+}
+
+.notification-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.notification-dot.success {
+  background: #12b76a;
+}
+
+.notification-dot.info {
+  background: #1f6feb;
+}
+
+.notification-content h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notification-content p {
+  margin: 0.2rem 0;
+  color: #334155;
+}
+
+.notification-content small {
+  color: #64748b;
+}
+
+@media (max-width: 700px) {
+  .notification-item {
+    grid-template-columns: auto 1fr;
+  }
+
+  .notification-item button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

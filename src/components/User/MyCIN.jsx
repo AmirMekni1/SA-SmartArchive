@@ -1,13 +1,12 @@
-// components/User/MyCIN.jsx
+
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 import { documents } from '../../services/api';
 import '../styles/user.css';
 
 const MyCIN = () => {
-  const { user } = useAuth();
   const [cinData, setCinData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchMyCIN();
@@ -15,10 +14,16 @@ const MyCIN = () => {
 
   const fetchMyCIN = async () => {
     try {
+      setError('');
       const response = await documents.getMyCIN();
       setCinData(response.data);
     } catch (error) {
       console.error('Error fetching CIN data:', error);
+      if (error?.response?.status === 404) {
+        setCinData(null);
+      } else {
+        setError('Unable to load CIN data right now. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -35,8 +40,24 @@ const MyCIN = () => {
         <p>The national identity information linked to your account</p>
       </div>
 
-      {cinData ? (
-        <div className="cin-card">
+      {error ?
+      <div className="no-cin">
+          <h3>Could not load your CIN data</h3>
+          <p>{error}</p>
+          <button
+          className="btn-upload-cin"
+          onClick={() => {
+            setLoading(true);
+            fetchMyCIN();
+          }}>
+          
+            Retry
+          </button>
+        </div> :
+      null}
+
+      {!error && cinData ?
+      <div className="cin-card">
           <div className="cin-card-header">
             <div className="cin-logo">🏛️</div>
             <h2>Tunisian Republic</h2>
@@ -47,11 +68,11 @@ const MyCIN = () => {
           <div className="cin-card-body">
             <div className="cin-photo">
               <div className="photo-placeholder">
-                {cinData.photo ? (
-                  <img src={cinData.photo} alt="Photo" />
-                ) : (
-                  <span>📸</span>
-                )}
+                {cinData.photo ?
+              <img src={cinData.photo} alt="Photo" /> :
+
+              <span>📸</span>
+              }
               </div>
             </div>
 
@@ -103,23 +124,23 @@ const MyCIN = () => {
             <button className="btn-print" onClick={() => window.print()}>
               🖨️ Print card
             </button>
-            <button className="btn-edit" onClick={() => alert('This feature will be available soon')}>
+            <button className="btn-edit" onClick={() => window.location.href = '/settings'}>
               ✏️ Request edit
             </button>
           </div>
-        </div>
-      ) : (
-        <div className="no-cin">
+        </div> :
+      !error ?
+      <div className="no-cin">
           <div className="no-cin-icon">🆔</div>
           <h3>No identity card found</h3>
           <p>Please upload an image of your card to extract the data automatically</p>
           <button className="btn-upload-cin" onClick={() => window.location.href = '/upload'}>
             Upload ID card
           </button>
-        </div>
-      )}
-    </div>
-  );
+        </div> :
+      null}
+    </div>);
+
 };
 
 export default MyCIN;

@@ -1,17 +1,15 @@
-// server.js - Main entry point
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load environment variables
 dotenv.config();
 
-// Import routes
 const authRoutes = require('./routes/auth.routes');
+const adminRoutes = require('./routes/admin.routes');
+const { ensureStaticAdmin } = require('./services/adminSeed.service');
 
-// server.js - Add this with your other routes
 const cinUploadRoutes = require('./routes/cinUpload');
 
 console.log('Environment variables loaded:');
@@ -19,43 +17,37 @@ console.log('EMAIL_ADDRESS:', process.env.EMAIL_ADDRESS ? 'SET' : 'NOT SET');
 console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? 'SET' : 'NOT SET');
 console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET');
 
-// MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/SmartArchiveDB";
 
 mongoose.connect(MONGODB_URI)
-.then(() => {
+.then(async () => {
     console.log('✅ MongoDB connected successfully');
+    await ensureStaticAdmin();
 })
 .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
     process.exit(1);
 });
 
-// Import routes
 const uploadRoutes = require('./routes/upload');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3005;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Serve uploaded files statically (optional)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-// Add CIN upload routes (separate from main upload)
 app.use('/api/cin', cinUploadRoutes);
 
-// Use routes
 app.use('/api', uploadRoutes);
 
-// Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
@@ -64,7 +56,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err.stack);
     res.status(500).json({
@@ -73,7 +64,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -81,7 +71,6 @@ app.use((req, res) => {
     });
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log('\n' + '='.repeat(60));
     console.log('🚀 Node.js server running successfully!');

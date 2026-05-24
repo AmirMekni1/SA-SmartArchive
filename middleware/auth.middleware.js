@@ -1,6 +1,6 @@
-// middleware/auth.middleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Admin = require('../models/Admin');
 
 const verifyToken = async (req, res, next) => {
   const token = req.headers.authorization;
@@ -16,13 +16,19 @@ const verifyToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.user_id);
 
+    let user = await User.findById(decoded.user_id);
     if (!user) {
-      return res.status(401).json({ success: false, error: 'User not found' });
+      const admin = await Admin.findById(decoded.user_id);
+      if (!admin) {
+        return res.status(401).json({ success: false, error: 'User not found' });
+      }
+      req.user = admin;
+      req.admin = admin;
+    } else {
+      req.user = user;
     }
 
-    req.user = user;
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

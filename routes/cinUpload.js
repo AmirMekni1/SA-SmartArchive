@@ -1,4 +1,3 @@
-// simple_ocr_routes_fixed.js
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -7,31 +6,18 @@ const axios = require("axios");
 const FormData = require("form-data");
 const mongoose = require("mongoose");
 const User = require('../models/User');
+const Admin = require('../models/Admin');
+const DocumentRecord = require('../models/DocumentRecord');
+
 
 
 const router = express.Router();
 
-// =======================
-// CONFIGURATION
-// =======================
 
 const OCR_API_URL = process.env.OCR_API_URL || "http://127.0.0.1:5003";
 const AUTH_API_URL = process.env.AUTH_API_URL || "http://127.0.0.1:5007"
 const UPLOAD_DIR = './uploads';
 
-// MongoDB Schema - ديناميكي (يمكنه تخزين أي حقل)
-const CINSchema = new mongoose.Schema({
-    cin_number: { type: String, sparse: true },
-    full_text: String,
-    method: String,
-    all_extracted_data: { type: mongoose.Schema.Types.Mixed, default: {} },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now }
-});
-
-const CINRecord = mongoose.model('CINRecord', CINSchema);
-
-// Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
@@ -56,9 +42,6 @@ const upload = multer({
     },
 });
 
-// =======================
-// دالة لعرض جميع البيانات بشكل منظم
-// =======================
 
 function displayAllData(data, prefix = "") {
     for (const [key, value] of Object.entries(data)) {
@@ -78,20 +61,13 @@ function displayAllData(data, prefix = "") {
     }
 }
 
-// =======================
-// دالة للتحقق من صحة رقم CIN
-// =======================
 
 function isValidCIN(cinNumber) {
     if (!cinNumber) return false;
     const cinStr = String(cinNumber);
-    // التحقق من أن الرقم مكون من 8 أرقام
     return /^\d{8}$/.test(cinStr);
 }
 
-// =======================
-// دالة لتوليد كلمة مرور تلقائية
-// =======================
 
 function generateAutoPassword() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
@@ -102,12 +78,8 @@ function generateAutoPassword() {
     return password;
 }
 
-// =======================
-// دالة لاستخراج رقم CIN من البيانات
-// =======================
 
 function extractCINNumber(extractedData) {
-    // محاولة استخراج رقم CIN من عدة مصادر
     if (extractedData.cin_number && isValidCIN(extractedData.cin_number)) {
         return extractedData.cin_number;
     }
@@ -121,7 +93,6 @@ function extractCINNumber(extractedData) {
         if (eightDigitNumber) return eightDigitNumber;
     }
     
-    // البحث عن أي رقم مكون من 8 أرقام في النص الكامل
     if (extractedData.full_text) {
         const match = extractedData.full_text.match(/\b\d{8}\b/);
         if (match) return match[0];
@@ -130,11 +101,25 @@ function extractCINNumber(extractedData) {
     return null;
 }
 
-// =======================
-// MAIN OCR ENDPOINT
-// =======================
 
-router.post("/upload", upload.single("file"), async (req, res) => {
+router.post("/upload", (req, res, next) => {
+  upload.single("file")(req, res, (err) => {
+    if (err && err.code === "LIMIT_PART_COUNT") {
+      return res.status(400).json({ success: false, error: "Too many form fields" });
+    }
+    if (err && err.message === "Unexpected field") {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid form field. Expected 'file' field.",
+        details: err.message
+      });
+    }
+    if (err) {
+      return res.status(400).json({ success: false, error: err.message });
+    }
+    next();
+  });
+}, async (req, res) => {
     let filePath = null;
 
     try {
@@ -157,7 +142,6 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             timeout: 120000,
         });
 
-        // Clean up temp file
         if (fs.existsSync(filePath)) {
             try { fs.unlinkSync(filePath); } catch(e) { console.log("Cleanup error:", e.message); }
         }
@@ -171,32 +155,11 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             });
         }
 
-        // استخراج جميع البيانات
         const extractedData = pythonResult.extracted_data || {};
         const method = pythonResult.method || "Unknown";
 
-        // =======================
-        // استخراج رقم CIN والتحقق منه
-        // =======================
         const cinNumber = extractCINNumber(extractedData);
-        // التحقق من صحة رقم CIN
         const isValid = isValidCIN(cinNumber);
-        // عرض جميع البيانات المستخرجة في الكونسول
-        console.log("\n" + "=".repeat(70));
-        console.log("📊 ALL EXTRACTED DATA:");
-        console.log("=".repeat(70));
-        console.log(`🛠️ Extraction Method: ${method}`);
-        console.log("-".repeat(70));
-        displayAllData(extractedData);
-        console.log("-".repeat(70));
-        console.log(`🔢 CIN Number Found: ${cinNumber || 'NOT FOUND'}`);
-        console.log(`✅ Is Valid CIN (8 digits): ${isValid ? 'YES' : 'NO'}`);
-        console.log("=".repeat(70));
-        console.log(`✅ Total fields extracted: ${Object.keys(extractedData).filter(k => !k.startsWith('_')).length}`);
-        console.log("=".repeat(70));
-        // =======================
-        // إرجاع جميع البيانات مع معلومات عن صحة CIN
-        // =======================
         
         const extractedFirstName =
             extractedData.first_name || extractedData.firstname || extractedData.given_name || extractedData.firstName || null;
@@ -204,8 +167,51 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             extractedData.last_name || extractedData.lastname || extractedData.family_name || extractedData.lastName || null;
         const extractedFullName =
             extractedData.full_name || extractedData.fullName || extractedData.name || `${extractedFirstName || ''} ${extractedLastName || ''}`.trim() || null;
-        existingUser = await User.findOne({ cin_number: cinNumber });
-        const isNewUser = !!cinNumber && !existingUser;
+        const existingUser = await User.findOne({ cin_number: cinNumber });
+        const existingAdmin = await Admin.findOne({ cin_number: cinNumber, role: 'admin' });
+        const accountExists = !!existingUser || !!existingAdmin;
+        const isNewUser = !!cinNumber && !accountExists;
+        const storedRecord = isValid
+            ? await DocumentRecord.findOneAndUpdate(
+                {
+                    cin_number: cinNumber,
+                    document_type: 'cin'
+                },
+                {
+                    $set: {
+                        filename: req.file.originalname || '',
+                        original_filename: req.file.originalname || '',
+                        stored_filename: req.file.filename || '',
+                        type: 'cin',
+                        status: 'processed',
+                        verification_status: 'pending_review',
+                        username: existingUser?.username || existingAdmin?.username || extractedFullName || '',
+                        user_id: String(existingUser?._id || existingAdmin?._id || ''),
+                        cin_number: cinNumber,
+                        file_size: req.file.size || 0,
+                        mime_type: req.file.mimetype || '',
+                        document_type: 'cin',
+                        detected_language: extractedData.detected_language || 'unknown',
+                        classification_source: 'cin-upload',
+                        quality_score: isValid ? 100 : 0,
+                        requires_admin_review: true,
+                        extracted_data: extractedData,
+                        full_text: extractedData.full_text || '',
+                        text_lines: Array.isArray(extractedData.text_lines) ? extractedData.text_lines : [],
+                        updated_at: new Date(),
+                    },
+                    $setOnInsert: {
+                        created_at: new Date(),
+                    }
+                },
+                {
+                    new: true,
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                }
+            )
+            : null;
+
         return res.json({
             success: true,
             extracted_data: extractedData,
@@ -214,12 +220,17 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             last_name: extractedLastName,
             full_name: extractedFullName,
             user_exists: !!existingUser,
+            admin_exists: !!existingAdmin,
             user_verified: existingUser?.is_verified || false,
-            email: existingUser?.email || null,
+            email: existingUser?.email || existingAdmin?.email || null,
             is_new_user: isNewUser,
             message: !isValid
                 ? "No valid CIN number found (must be 8 digits)"
-                : (isNewUser ? "new user" : (existingUser?.is_verified ? "existing verified user" : "existing unverified user")),
+                : (existingAdmin
+                    ? "existing admin user"
+                    : (isNewUser
+                        ? "new user"
+                        : (existingUser?.is_verified ? "existing verified user" : "existing unverified user"))),
             cin_validation: {
                 found: !!cinNumber,
                 cin_number: cinNumber || null,
@@ -231,6 +242,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
                 has_full_text: !!extractedData.full_text,
                 total_lines: extractedData.total_lines || extractedData.text_lines?.length || 0
             },
+            saved_record_id: storedRecord?._id || null,
             timestamp: new Date().toISOString()
         });
 
@@ -250,14 +262,12 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 });
 
-// =======================
-// GET ALL RECORDS - فقط السجلات التي تحتوي على CIN صالح
-// =======================
 
 router.get("/records", async (req, res) => {
     try {
-        const records = await CINRecord.find({ 
-            cin_number: { $exists: true, $ne: null }
+        const records = await DocumentRecord.find({ 
+            cin_number: { $exists: true, $ne: null, $ne: '' },
+            document_type: 'cin'
         }).sort({ created_at: -1 }).limit(50);
         
         res.json({
@@ -266,9 +276,9 @@ router.get("/records", async (req, res) => {
             records: records.map(r => ({
                 id: r._id,
                 cin_number: r.cin_number,
-                method: r.method,
+                method: r.classification_source || 'cin-upload',
                 extracted_data_summary: {
-                    fields: Object.keys(r.all_extracted_data || {}).filter(k => !k.startsWith('_')).length,
+                    fields: Object.keys(r.extracted_data || {}).filter(k => !k.startsWith('_')).length,
                     has_full_text: !!r.full_text
                 },
                 created_at: r.created_at
@@ -279,18 +289,14 @@ router.get("/records", async (req, res) => {
     }
 });
 
-// =======================
-// GET SINGLE RECORD BY ID
-// =======================
 
 router.get("/record/:id", async (req, res) => {
     try {
-        const record = await CINRecord.findById(req.params.id);
+        const record = await DocumentRecord.findOne({ _id: req.params.id, document_type: 'cin' });
         if (!record) {
             return res.status(404).json({ success: false, error: "Record not found" });
         }
         
-        // التحقق من صحة رقم CIN في السجل
         const isValid = isValidCIN(record.cin_number);
         
         res.json({
@@ -299,8 +305,8 @@ router.get("/record/:id", async (req, res) => {
                 id: record._id,
                 cin_number: record.cin_number,
                 is_valid_cin: isValid,
-                method: record.method,
-                extracted_data: record.all_extracted_data,
+                method: record.classification_source || 'cin-upload',
+                extracted_data: record.extracted_data || {},
                 full_text: record.full_text,
                 created_at: record.created_at,
                 updated_at: record.updated_at
@@ -311,9 +317,6 @@ router.get("/record/:id", async (req, res) => {
     }
 });
 
-// =======================
-// CHECK CIN VALIDITY - التحقق من صحة رقم CIN
-// =======================
 
 router.post("/check-cin", async (req, res) => {
     try {
@@ -327,7 +330,7 @@ router.post("/check-cin", async (req, res) => {
         }
         
         const isValid = isValidCIN(cin_number);
-        const exists = await CINRecord.findOne({ cin_number: cin_number });
+        const exists = await DocumentRecord.findOne({ cin_number: cin_number, document_type: 'cin' });
         
         res.json({
             success: true,
@@ -341,9 +344,6 @@ router.post("/check-cin", async (req, res) => {
     }
 });
 
-// =======================
-// HEALTH CHECK
-// =======================
 
 router.get("/health", async (req, res) => {
     let ocrConnected = false;

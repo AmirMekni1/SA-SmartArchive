@@ -1,4 +1,3 @@
-# llmwhisperer_api_deepseek.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from unstract.llmwhisperer.client_v2 import LLMWhispererClientV2
@@ -15,9 +14,6 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# =======================
-# إعدادات LLMWhisperer
-# =======================
 
 LLMWHISPERER_API_KEY = os.environ.get("LLMWHISPERER_API_KEY", "mM8MTaipyuZ6oF7MSmo-0qCU-S7uMdgjah2kHxnr6Mo")
 
@@ -26,18 +22,12 @@ client = LLMWhispererClientV2(
     api_key=LLMWHISPERER_API_KEY
 )
 
-# =======================
-# نموذج DeepSeek-V3.1 - الإعدادات
-# =======================
 
 MODEL_NAME = "deepseek-v3.1:671b-cloud"
 TEMPERATURE = 0.6
 TOP_P = 0.95
 CONTEXT_LENGTH = 128000
 
-# =======================
-# دوال معالجة أسماء الأب (بن/بنت)
-# =======================
 
 def extract_father_name_from_text(text):
     """
@@ -72,7 +62,6 @@ def fix_arabic_text(text):
         if wrong in result:
             result = result.replace(wrong, correct)
     
-    # معالجة العبارات الثنائية
     words = result.split()
     if len(words) == 2 and words[0] in ['التونسية', 'الوطنية', 'التعريف', 'الولادة']:
         result = f"{words[1]} {words[0]}"
@@ -87,9 +76,6 @@ def clean_text(text):
     text = text.strip()
     return text
 
-# =======================
-# التحقق من توفر النموذج
-# =======================
 
 def check_model_available():
     """التحقق من توفر النموذج في Ollama"""
@@ -109,9 +95,6 @@ def check_model_available():
     except Exception as e:
         return False, f"Ollama error: {e}"
 
-# =======================
-# محاولة تحميل LangChain
-# =======================
 
 LANGCHAIN_AVAILABLE = False
 try:
@@ -123,9 +106,6 @@ try:
 except ImportError as e:
     logger.error(f"❌ LangChain not installed: {e}")
 
-# =======================
-# تهيئة نموذج DeepSeek-V3.1
-# =======================
 
 def setup_deepseek_model():
     """تهيئة نموذج DeepSeek-V3.1"""
@@ -147,9 +127,6 @@ def setup_deepseek_model():
         logger.error(f"❌ Failed to load DeepSeek-V3.1: {e}")
         return None
 
-# =======================
-# إنشاء سلسلة الاستخراج مع تعليمات خاصة لاسم الأب
-# =======================
 
 def create_extraction_chain(llm):
     """إنشاء سلسلة LangChain لاستخراج المعلومات مع معالجة خاصة لاسم الأب"""
@@ -214,11 +191,9 @@ def extract_with_deepseek(text, llm):
         chain = create_extraction_chain(llm)
         result = chain.invoke({"text": text})
         
-        # تنظيف النتائج
         for key, value in result.items():
             if isinstance(value, str):
                 if key == 'father_name' and value:
-                    # معالجة خاصة لاسم الأب
                     value = extract_father_name_from_text(value)
                 result[key] = fix_arabic_text(value.strip())
         
@@ -231,14 +206,10 @@ def extract_with_deepseek(text, llm):
         logger.error(f"DeepSeek extraction error: {e}")
         return None
 
-# =======================
-# دالة معالجة الصورة الرئيسية
-# =======================
 
 def process_cin_card(image_path):
     """معالجة بطاقة التعريف باستخدام DeepSeek-V3.1"""
     try:
-        # 1. OCR باستخدام LLMWhisperer
         logger.info("📸 Processing image with LLMWhisperer...")
         result = client.whisper(
             file_path=image_path,
@@ -257,7 +228,6 @@ def process_cin_card(image_path):
             logger.info(f"   Line {i+1}: {line[:80]}")
         logger.info("="*50)
         
-        # 2. التحقق من توفر النموذج
         available, message = check_model_available()
         if not available:
             logger.error(f"❌ {message}")
@@ -272,7 +242,6 @@ def process_cin_card(image_path):
             logger.error(f"❌ {error_msg}")
             return {"success": False, "error": error_msg}
         
-        # 3. تهيئة DeepSeek-V3.1
         logger.info(f"🤖 Initializing {MODEL_NAME}...")
         llm = setup_deepseek_model()
         
@@ -281,7 +250,6 @@ def process_cin_card(image_path):
             logger.error(f"❌ {error_msg}")
             return {"success": False, "error": error_msg}
         
-        # 4. استخراج المعلومات
         logger.info(f"🤖 Extracting information with DeepSeek-V3.1...")
         extracted_data = extract_with_deepseek(raw_text, llm)
         
@@ -290,9 +258,7 @@ def process_cin_card(image_path):
             logger.error(f"❌ {error_msg}")
             return {"success": False, "error": error_msg}
         
-        # 5. معالجة إضافية لاسم الأب من النص الخام إذا لم يجده النموذج
         if not extracted_data.get('father_name'):
-            # البحث عن اسم الأب في السطور
             for line in lines:
                 if 'بن' in line:
                     father = extract_father_name_from_text(line)
@@ -301,7 +267,6 @@ def process_cin_card(image_path):
                         logger.info(f"📝 Extracted father name from raw text: {father}")
                         break
         
-        # 6. إضافة النص الأصلي
         extracted_data["full_text"] = fix_arabic_text(raw_text)
         extracted_data["text_lines"] = [fix_arabic_text(line) for line in lines]
         extracted_data["_metadata"] = {
@@ -331,9 +296,6 @@ def process_cin_card(image_path):
         logger.error(f"Error: {e}")
         return {"success": False, "error": str(e)}
 
-# =======================
-# API Endpoints
-# =======================
 
 @app.route('/process', methods=['POST'])
 def process_document():

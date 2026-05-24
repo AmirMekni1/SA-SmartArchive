@@ -1,4 +1,3 @@
-// utils/helpers.js
 
 const cleanText = (text) => {
   if (!text) return text;
@@ -27,7 +26,6 @@ const fixArabicText = (text) => {
     }
   }
   
-  // Handle two-word phrases
   const words = result.split(' ');
   if (words.length === 2 && ['التونسية', 'الوطنية', 'التعريف', 'الولادة'].includes(words[0])) {
     result = `${words[1]} ${words[0]}`;
@@ -39,31 +37,26 @@ const fixArabicText = (text) => {
 const extractFatherNameFromText = (text) => {
   if (!text) return null;
   
-  // Handle specific pattern: "الرحمان عبد بن صالح بن" -> "عبد الرحمان بن صالح"
   const pattern1 = text.match(/الرحمان\s+عبد\s+بن\s+صالح\s+بن/);
   if (pattern1) {
     return 'عبد الرحمان بن صالح';
   }
   
-  // Handle pattern: "عبد الرحمان بن صالح"
   const pattern2 = text.match(/عبد\s+الرحمان\s+بن\s+صالح/);
   if (pattern2) {
     return 'عبد الرحمان بن صالح';
   }
   
-  // Handle pattern: "خليفه بن الحسين بنت" -> "خليفه بن الحسين"
   const pattern3 = text.match(/([^\s]+)\s+بن\s+([^\s]+)\s+بنت/);
   if (pattern3) {
     return `${pattern3[1]} بن ${pattern3[2]}`;
   }
   
-  // Handle pattern: "الهادي بن منذر بن" -> "الهادي بن منذر"
   const pattern4 = text.match(/([^\s]+)\s+بن\s+([^\s]+)\s+بن/);
   if (pattern4) {
     return `${pattern4[1]} بن ${pattern4[2]}`;
   }
   
-  // Handle pattern: "محمد بن علي"
   const pattern5 = text.match(/([^\s]+)\s+بن\s+([^\s]+)/);
   if (pattern5) {
     return `${pattern5[1]} بن ${pattern5[2]}`;
@@ -96,7 +89,6 @@ const isValidCIN = (cin) => {
 };
 
 const isStrongPassword = (password) => {
-  // At least 8 characters, one uppercase, one lowercase, one number
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
   return passwordRegex.test(password);
 };

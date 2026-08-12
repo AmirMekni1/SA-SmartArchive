@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
+      trim: true
     },
     password: {
       type: String,
@@ -14,7 +15,8 @@ const userSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
     first_name: {
       type: String,
@@ -30,12 +32,11 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'verifier'],
-      default: 'user'
+      default: 'admin'
     },
     is_verified: {
       type: Boolean,
-      default: false
+      default: true
     },
     verified_at: {
       type: Date,
@@ -47,8 +48,9 @@ const userSchema = new mongoose.Schema(
     },
     cin_number: {
       type: String,
+      required: true,
       unique: true,
-      sparse: true 
+      trim: true
     },
     phone: {
       type: String,
@@ -77,4 +79,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.models.User || mongoose.model('User', userSchema);
+module.exports = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
